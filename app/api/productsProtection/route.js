@@ -81,7 +81,7 @@ export async function GET() {
     },
     {
       id: 12,
-      name: "Цогц хамгаалалтын өмсгөл",
+      name: "Хормогч",
       description: "Материал: 3 давхар Полипропилен Зориулалт: Цогц хамгаалалтын өмсгөл",
       image: "/images/zurag38.jpg",
       category: "protection"
