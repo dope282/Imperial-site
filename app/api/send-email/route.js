@@ -5,7 +5,6 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     
-    // Бүх талбаруудыг авах
     const name = formData.get("name");
     const email = formData.get("email");
     const phone = formData.get("phone");
@@ -15,8 +14,6 @@ export async function POST(req) {
     const experience = formData.get("experience");
     const cvFile = formData.get("cv");
 
-    // --- ЯЛГАХ ЛОГИК ---
-    // Хэрэв cvFile байвал энэ нь "АНКЕТ", байхгүй бол "ХОЛБОО БАРИХ"
     const isApplication = cvFile && cvFile.size > 0;
     const mailSubject = isApplication 
       ? `[АЖЛЫН АНКЕТ] - ${name} (${position})` 
@@ -25,13 +22,12 @@ export async function POST(req) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,  // .env-ээс авна
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
       tls: { rejectUnauthorized: false }
     });
 
-    // Мэйл доторх бүтцийг ялгаатай харуулах
     const htmlContent = isApplication ? `
       <div style="font-family: sans-serif; border: 1px solid #eee; padding: 20px;">
         <h2 style="color: #0056b3;">Шинэ ажлын анкет ирлээ</h2>
@@ -59,7 +55,7 @@ export async function POST(req) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.RECEIVER_EMAIL,
-      subject: mailSubject, // Энд гарчиг ялгарч харагдана
+      subject: mailSubject, 
       html: htmlContent,
       attachments: []
     };
