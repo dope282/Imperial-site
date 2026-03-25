@@ -61,6 +61,8 @@ export default function ProductsPage({ category }) {
       pages.push(1);
       
       let s = Math.max(2, page - (isMobile ? 0 : 1));
+
+      
       let e = Math.min(total - 1, page + (isMobile ? 0 : 1));
       
       if (s > 2) pages.push("…");
