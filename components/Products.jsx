@@ -52,14 +52,17 @@ export default function ProductsPage({ category }) {
 
   const getPages = (total) => {
     const pages = [];
-    // Гар утсан дээр цөөн тоо харуулах логик
-    const maxVisible = window.innerWidth < 768 ? 3 : 7;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const maxVisible = isMobile ? 3 : 7;
+    
     if (total <= maxVisible) {
       for (let i = 1; i <= total; i++) pages.push(i);
     } else {
       pages.push(1);
-      let s = Math.max(2, page - (window.innerWidth < 768 ? 0 : 1));
-      let e = Math.min(total - 1, page + (window.innerWidth < 768 ? 0 : 1));
+      
+      let s = Math.max(2, page - (isMobile ? 0 : 1));
+      let e = Math.min(total - 1, page + (isMobile ? 0 : 1));
+      
       if (s > 2) pages.push("…");
       for (let i = s; i <= e; i++) pages.push(i);
       if (e < total - 1) pages.push("…");
