@@ -52,17 +52,16 @@ export default function ProductsPage({ category }) {
 
   const getPages = (total) => {
     const pages = [];
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const maxVisible = isMobile ? 3 : 7;
+    // СЕРВЕР ТАЛД (BUILD) АЛДАА ӨГӨХГҮЙ БАЙХ ЗАСВАР:
+    const isClient = typeof window !== 'undefined';
+    const isMobile = isClient && window.innerWidth < 768;
+    const maxVisible = isMobile ? 3 : 5; // Илүү компакт болгохын тулд 5 болгов
     
     if (total <= maxVisible) {
       for (let i = 1; i <= total; i++) pages.push(i);
     } else {
       pages.push(1);
-      
       let s = Math.max(2, page - (isMobile ? 0 : 1));
-
-      
       let e = Math.min(total - 1, page + (isMobile ? 0 : 1));
       
       if (s > 2) pages.push("…");
@@ -74,36 +73,36 @@ export default function ProductsPage({ category }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
-      {/* Search Input */}
-      <div className={`sticky top-20 z-20 md:static ${!isGrid ? 'bg-white p-4 md:p-6 rounded-t-2xl border-x border-t border-gray-100 shadow-sm' : ''}`}>
+    <div className="flex flex-col gap-3 md:gap-6">
+      {/* Search Input - Mobile дээр илүү компакт, Sticky (дээрээ наалдана) */}
+      <div className="sticky top-[64px] md:top-24 z-30 py-2 bg-gray-50/80 backdrop-blur-sm">
         <input
           type="text"
           placeholder={`${category === "chemical" ? "Бодис хайх..." : "Бүтээгдэхүүн хайх..."}`}
           value={search}
           onChange={handleSearchChange}
-          className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#0054A6] outline-none bg-white shadow-sm text-sm"
+          className="w-full p-2.5 md:p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#0054A6] outline-none bg-white shadow-sm text-sm"
         />
       </div>
 
       {isGrid ? (
         /* --- GRID DISPLAY (Glassware & Protection) --- */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {currentItems.map((item, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all">
-              <div className="relative aspect-square bg-gray-50">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-all duration-500" />
+            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
+              <div className="relative aspect-square bg-gray-50 border-b border-gray-50">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-95 group-active:scale-105 transition-transform" />
               </div>
-              <div className="p-4 md:p-5">
-                <h3 className="font-bold text-gray-800 mb-1 md:mb-2 text-sm md:text-base line-clamp-1">{item.name}</h3>
-                <p className="text-[11px] md:text-xs text-gray-400 leading-relaxed line-clamp-2">{item.description}</p>
+              <div className="p-3 md:p-5">
+                <h3 className="font-bold text-gray-800 mb-1 text-[13px] md:text-base line-clamp-1">{item.name}</h3>
+                <p className="text-[10px] md:text-xs text-gray-400 leading-tight line-clamp-2">{item.description}</p>
               </div>
             </div>
           ))}
         </div>
       ) : (
         /* --- TABLE / CARD DISPLAY (Chemical) --- */
-        <div className="bg-white rounded-b-2xl shadow-sm overflow-hidden border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full border-collapse">
@@ -128,23 +127,25 @@ export default function ProductsPage({ category }) {
             </table>
           </div>
 
-          {/* Mobile Card View (Зөвхөн гар утсан дээр харагдана) */}
-          <div className="md:hidden divide-y divide-gray-100">
+          {/* Mobile Card View (Илүү нягт, 2 баганаар) */}
+          <div className="md:hidden grid grid-cols-1 divide-y divide-gray-50">
             {currentItems.map((p, i) => (
-              <div key={i} className="p-4 space-y-2">
-                <div className="text-[#0054A6] font-bold text-sm leading-tight">{p["Олон улсын нэр"]}</div>
-                <div className="grid grid-cols-2 gap-2 text-[12px]">
-                  <div>
-                    <span className="text-gray-400 block uppercase text-[9px] tracking-tighter">Монгол нэр</span>
-                    <span className="text-gray-700">{p["Монгол нэр"] || "-"}</span>
+              <div key={i} className="p-3.5 space-y-1.5 active:bg-gray-50">
+                <div className="text-[#0054A6] font-bold text-[13px] leading-snug">{p["Олон улсын нэр"]}</div>
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-tighter block">Монгол</span>
+                    <span className="text-gray-700 text-[11px] font-medium line-clamp-1">{p["Монгол нэр"] || "-"}</span>
                   </div>
-                  <div>
-                    <span className="text-gray-400 block uppercase text-[9px] tracking-tighter">Томъёо</span>
-                    <span className="text-gray-600 font-serif">{p["Томъёо"] || "-"}</span>
+                  <div className="text-right">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-tighter block">Томъёо</span>
+                    <span className="text-gray-600 font-serif text-[11px]">{p["Томъёо"] || "-"}</span>
                   </div>
                 </div>
-                <div className="inline-block bg-gray-50 px-2 py-0.5 rounded text-[10px] text-gray-500 border border-gray-100">
-                  CAS: {p["CAS дугаар"]}
+                <div className="flex justify-between items-center pt-1">
+                  <span className="bg-gray-100 px-2 py-0.5 rounded text-[9px] text-gray-500 font-mono">
+                    CAS: {p["CAS дугаар"]}
+                  </span>
                 </div>
               </div>
             ))}
@@ -152,23 +153,41 @@ export default function ProductsPage({ category }) {
         </div>
       )}
 
-      {/* --- COMMON PAGINATION --- */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-10">
-        <div className="text-[10px] md:text-xs text-gray-400 font-medium">
-          Нийт {displayData.length} илэрц
+      {/* --- COMMON PAGINATION (Compact) --- */}
+      <div className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-12">
+        <div className="hidden sm:block text-[10px] text-gray-400 font-medium">
+          {displayData.length} илэрц
         </div>
-        <div className="flex gap-1">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="w-8 h-8 flex items-center justify-center border rounded-md disabled:opacity-20 bg-white">←</button>
-          {getPages(totalPages).map((p, i) => (
-            <button
-              key={i}
-              onClick={() => typeof p === 'number' && setPage(p)}
-              className={`min-w-[32px] h-8 flex items-center justify-center border rounded-md text-xs font-bold transition-all ${page === p ? "bg-[#0054A6] text-white border-[#0054A6]" : "bg-white text-gray-600 hover:border-gray-400"}`}
-            >
-              {p}
-            </button>
-          ))}
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="w-8 h-8 flex items-center justify-center border rounded-md disabled:opacity-20 bg-white">→</button>
+        <div className="flex items-center gap-1 mx-auto sm:mx-0">
+          <button 
+            onClick={() => setPage(p => Math.max(1, p - 1))} 
+            disabled={page === 1} 
+            className="w-8 h-8 flex items-center justify-center border rounded-lg disabled:opacity-20 text-gray-400"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          
+          <div className="flex gap-1">
+            {getPages(totalPages).map((p, i) => (
+              <button
+                key={i}
+                onClick={() => typeof p === 'number' && setPage(p)}
+                className={`w-8 h-8 flex items-center justify-center border rounded-lg text-[11px] font-bold transition-all ${
+                  page === p ? "bg-[#0054A6] text-white border-[#0054A6]" : "bg-white text-gray-600 border-gray-100"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
+            disabled={page === totalPages} 
+            className="w-8 h-8 flex items-center justify-center border rounded-lg disabled:opacity-20 text-gray-400"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
         </div>
       </div>
     </div>
